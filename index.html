@@ -1,4 +1,3 @@
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -31,26 +30,27 @@
   .clock {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 24px;
   }
   
   .flip-unit {
     display: flex;
-    gap: 4px;
+    gap: 8px;
   }
 
+  /* --- LARGE TV FLIP CARD CONFIGURATION --- */
   .flip-card {
     position: relative;
-    width: 140px;
-    height: 240px;
-    font-size: 150px;
+    width: 220px;
+    height: 380px;
+    font-size: 240px;
     font-weight: 500;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     background: #1e2229;
     color: #f1f3f5;
-    border-radius: 12px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-    perspective: 400px;
+    border-radius: 16px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+    perspective: 600px;
     user-select: none;
   }
 
@@ -68,23 +68,23 @@
     top: 0;
     align-items: flex-end;
     background: #161920;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    border-bottom: 1px solid rgba(0,0,0,0.4);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    border-bottom: 2px solid rgba(0,0,0,0.5);
   }
 
   .lower {
     bottom: 0;
     align-items: flex-start;
     background: #1e2229;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
   }
 
   .upper span, .lower span, .fold-card span {
     position: absolute;
-    height: 240px;
-    line-height: 240px;
+    height: 380px;
+    line-height: 380px;
     width: 100%;
     text-align: center;
   }
@@ -117,46 +117,37 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 30px;
-    height: 240px;
-    padding: 0 5px;
+    gap: 45px;
+    height: 380px;
+    padding: 0 10px;
   }
   .dot {
-    width: 12px;
-    height: 12px;
+    width: 20px;
+    height: 20px;
     background-color: #1e2229;
     border-radius: 50%;
   }
 
   .ampm {
-    font-size: 100px;
+    font-size: 130px;
     font-weight: 600;
-    letter-spacing: 4px;
+    letter-spacing: 6px;
     color: #ffffff;
-    margin-left: 20px;
+    margin-left: 30px;
     align-self: flex-end;
-    margin-bottom: 25px;
+    margin-bottom: 35px;
   }
 
   .date {
-    margin-top: 50px;
-    font-size: 30px;
+    margin-top: 60px;
+    font-size: 42px;
     font-weight: 400;
-    letter-spacing: 5px;
+    letter-spacing: 6px;
     color: #ffffff;
     text-transform: uppercase;
-  }
-  .status {
-    position: absolute;
-    bottom: 42px;
-    left: 0;
-    width: 100%;
     text-align: center;
-    font-size: 18px;
-    letter-spacing: 3px;
-    color: #69727d;
-    text-transform: uppercase;
   }
+
   @media (max-width: 1600px) {
     .screen { min-width: 100vw; min-height: 100vh; }
   }
@@ -183,32 +174,17 @@
       <div class="flip-card" id="m2"><div class="upper"><span>0</span></div><div class="lower"><span>0</span></div><div class="fold-card"><span>0</span></div></div>
     </div>
     
-    <div class="separator" id="sep2">
-      <div class="dot"></div>
-      <div class="dot"></div>
-    </div>
-
-    <!-- Seconds -->
-    <div class="flip-unit" id="seconds-group">
-      <div class="flip-card" id="s1"><div class="upper"><span>0</span></div><div class="lower"><span>0</span></div><div class="fold-card"><span>0</span></div></div>
-      <div class="flip-card" id="s2"><div class="upper"><span>0</span></div><div class="lower"><span>0</span></div><div class="fold-card"><span>0</span></div></div>
-    </div>
-
-    <div class="ampm" id="ampm" style="display: none;"></div>
+    <!-- AM/PM -->
+    <div class="ampm" id="ampm">AM</div>
   </div>
-
+  
+  <!-- Date -->
   <div class="date" id="date"></div>
-
 </div>
 
 <script>
-  let use24Hour = true;   
-  let showSeconds = true; 
-
   const dateEl = document.getElementById("date");
   const ampmEl = document.getElementById("ampm");
-  const secondsGroup = document.getElementById("seconds-group");
-  const sep2 = document.getElementById("sep2");
 
   function setDigit(cardId, newVal) {
     const card = document.getElementById(cardId);
@@ -236,38 +212,28 @@
 
   function updateClock() {
     const now = new Date();
-
     let hours = now.getHours();
     const minutes = String(now.getMinutes()).padStart(2, "0");
-    const seconds = String(now.getSeconds()).padStart(2, "0");
 
-    let ampm = "";
-    if (!use24Hour) {
-      ampm = hours >= 12 ? "PM" : "AM";
-      hours = hours % 12 || 12;
-      ampmEl.style.display = "block";
-      ampmEl.textContent = ampm;
-    } else {
-      ampmEl.style.display = "none";
-    }
+    // AM / PM
+    const ampm = hours >= 12 ? "PM" : "AM";
 
+    // Convert to 12-hour format
+    hours = hours % 12 || 12;
     const hh = String(hours).padStart(2, "0");
 
+    // Hours
     setDigit("h1", hh[0]);
     setDigit("h2", hh[1]);
+
+    // Minutes
     setDigit("m1", minutes[0]);
     setDigit("m2", minutes[1]);
-    setDigit("s1", seconds[0]);
-    setDigit("s2", seconds[1]);
 
-    if (showSeconds) {
-      secondsGroup.style.display = "flex";
-      sep2.style.display = "flex";
-    } else {
-      secondsGroup.style.display = "none";
-      sep2.style.display = "none";
-    }
+    // AM / PM
+    ampmEl.textContent = ampm;
 
+    // DATE
     dateEl.textContent = now.toLocaleDateString("en-MY", {
       weekday: "long",
       day: "2-digit",
